@@ -1,0 +1,12 @@
+{
+  "name": "quickshell-hyprland-bar",
+  "version": "0.1.0",
+  "description": "A modern Quickshell bar configuration for Hyprland inspired by crystal/aura",
+  "main": "shell.qml",
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "quickshell": ">=0.1.0"
+  },
+  "compositor": "hyprland"
+}
