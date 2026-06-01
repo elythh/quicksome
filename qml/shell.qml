@@ -86,11 +86,6 @@ ShellRoot {
                         property bool trayGroupExpanded: true
                         spacing: 8
                         Layout.alignment: Qt.AlignRight
-
-                        MediaWidget {
-                            visible: mediaActive
-                        }
-
                         Rectangle {
                             Layout.alignment: Qt.AlignVCenter
                             Layout.preferredWidth: Theme.widgetHeight
@@ -130,6 +125,11 @@ ShellRoot {
                                 parentWindow: bar
                             }
                         }
+
+                        MediaWidget {
+                            visible: mediaActive
+                        }
+
 
                         NetworkStatusWidget {}
 
