@@ -8,7 +8,8 @@ RowLayout {
     spacing: 4
 
     property var parentWindow: null
-    property bool expanded: false
+    property bool itemsExpanded: false
+    property bool showToggle: true
     property int trayItemCount: (SystemTray.items && SystemTray.items.values) ? SystemTray.items.values.length : 0
 
     Repeater {
@@ -24,7 +25,7 @@ RowLayout {
             color: mouseArea.containsMouse ? Theme.bgAlt : "transparent"
             
             // Show first 3 items always, rest only when expanded
-            visible: index < 3 || expanded
+            visible: index < 3 || itemsExpanded
             
             Behavior on Layout.preferredWidth {
                 NumberAnimation { duration: 200; easing.type: Easing.OutCubic }
@@ -52,33 +53,31 @@ RowLayout {
                 acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
                 
                 onClicked: (mouse) => {
-                    console.log("Tray icon clicked:", modelData.tooltip || "Unknown")
-                    console.log("Button:", mouse.button, "Has menu:", modelData.menu !== null && modelData.menu !== undefined)
-                    
+                    const canShowMenu = modelData.hasMenu && parentWindow
+
                     if (mouse.button === Qt.LeftButton) {
-                        console.log("Left click - activating")
-                        if (!modelData.onlyMenu) {
+                        if (!modelData.onlyMenu && modelData.activate) {
                             modelData.activate()
-                        } else if (parentWindow) {
+                        } else if (modelData.secondaryActivate) {
+                            modelData.secondaryActivate()
+                        } else if (canShowMenu) {
                             const menuPoint = mouseArea.mapToItem(parentWindow.contentItem || parentWindow, mouse.x, mouse.y)
                             modelData.display(parentWindow, Math.round(menuPoint.x), Math.round(menuPoint.y))
                         }
                     } else if (mouse.button === Qt.RightButton) {
-                        console.log("Right click - attempting to open menu")
-                        if (modelData.hasMenu && parentWindow) {
+                        if (canShowMenu) {
                             const menuPoint = mouseArea.mapToItem(parentWindow.contentItem || parentWindow, mouse.x, mouse.y)
                             modelData.display(parentWindow, Math.round(menuPoint.x), Math.round(menuPoint.y))
-                        } else {
-                            console.log("No menu available for this item")
-                            // Fallback to secondary activate
-                            if (modelData.secondaryActivate) {
-                                modelData.secondaryActivate()
-                            }
+                        } else if (modelData.secondaryActivate) {
+                            modelData.secondaryActivate()
+                        } else if (modelData.activate) {
+                            modelData.activate()
                         }
                     } else if (mouse.button === Qt.MiddleButton) {
-                        console.log("Middle click - secondary activate")
                         if (modelData.secondaryActivate) {
                             modelData.secondaryActivate()
+                        } else if (modelData.activate) {
+                            modelData.activate()
                         }
                     }
                 }
@@ -93,7 +92,7 @@ RowLayout {
         Layout.preferredHeight: Theme.widgetHeight
         radius: Theme.borderRadius
         color: toggleMouseArea.containsMouse ? Theme.bgAlt : "transparent"
-        visible: trayItemCount > 3
+        visible: showToggle && trayItemCount > 3
 
         Behavior on color {
             ColorAnimation { duration: 150 }
@@ -101,18 +100,18 @@ RowLayout {
 
         Item {
             anchors.fill: parent
-            
+
             Text {
                 anchors.centerIn: parent
                 width: 16
                 height: 16
                 font.family: Theme.fontFamilyMono
                 font.pixelSize: 16
-                color: expanded ? Theme.accent : Theme.fgAlt
-                text: expanded ? "󰅁" : "󰅂"
+                color: itemsExpanded ? Theme.accent : Theme.fgAlt
+                text: itemsExpanded ? "󰅁" : "󰅂"
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
-                
+
                 Behavior on color {
                     ColorAnimation { duration: 150 }
                 }
@@ -125,8 +124,7 @@ RowLayout {
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
             onClicked: {
-                console.log("Tray toggle clicked, expanded:", expanded, "→", !expanded)
-                expanded = !expanded
+                itemsExpanded = !itemsExpanded
             }
         }
     }

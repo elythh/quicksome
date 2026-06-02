@@ -7,7 +7,7 @@ Rectangle {
     property string icon: ""
     property string tooltip: ""
     property int iconXOffset: 0
-    property int iconYOffset: -1
+    property int iconYOffset: 0
     property var onClickAction: null
     
     Layout.alignment: Qt.AlignVCenter
@@ -24,14 +24,15 @@ Rectangle {
         anchors.fill: parent
 
         Text {
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
+            anchors.fill: parent
             anchors.horizontalCenterOffset: iconXOffset
             anchors.verticalCenterOffset: iconYOffset
             font.family: Theme.fontFamilyMono
             font.pixelSize: Theme.iconSize
             color: mouseArea.containsMouse ? Theme.bg : Theme.fg
             text: icon
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
         }
     }
 

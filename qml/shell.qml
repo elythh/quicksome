@@ -246,13 +246,11 @@ ShellRoot {
 
                         }
 
-                        RowLayout {
-                            spacing: 8
+                        SysTray {
+                            parentWindow: bar
+                            itemsExpanded: rightSection.trayGroupExpanded
+                            showToggle: false
                             visible: rightSection.trayGroupExpanded
-
-                            SysTray {
-                                parentWindow: bar
-                            }
                         }
 
                         MediaWidget {
@@ -268,21 +266,61 @@ ShellRoot {
                             }
                         }
 
-                        SettingsButton {
-                            icon: "󰂚"
-                            tooltip: "Notification History"
-                            iconXOffset: 1
-                            iconYOffset: -1
-                            onClickAction: function() {
-                                bar.notificationHistoryOpen = !bar.notificationHistoryOpen
+                        Rectangle {
+                            Layout.alignment: Qt.AlignVCenter
+                            Layout.preferredWidth: Theme.widgetHeight
+                            Layout.preferredHeight: Theme.widgetHeight
+                            radius: Theme.borderRadius
+                            color: notificationButtonMouse.containsMouse ? Theme.accent : Theme.bgAlt
+
+                            Behavior on color {
+                                ColorAnimation { duration: 150 }
+                            }
+
+                            IconImage {
+                                anchors.centerIn: parent
+                                implicitSize: 18
+                                source: (root.notificationHistory && root.notificationHistory.length > 0)
+                                    ? Qt.resolvedUrl("assets/icons/notification-bell-blue.svg")
+                                    : Qt.resolvedUrl("assets/icons/notification-bell.svg")
+                                opacity: notificationButtonMouse.containsMouse ? 0.95 : 0.85
+                            }
+
+                            MouseArea {
+                                id: notificationButtonMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    bar.notificationHistoryOpen = !bar.notificationHistoryOpen
+                                }
                             }
                         }
 
-                        PowerButton {
-                            icon: "󰐥"
-                            tooltip: "Power Menu"
-                            iconXOffset: 1
-                            iconYOffset: -1
+                        Rectangle {
+                            Layout.alignment: Qt.AlignVCenter
+                            Layout.preferredWidth: Theme.widgetHeight
+                            Layout.preferredHeight: Theme.widgetHeight
+                            radius: Theme.borderRadius
+                            color: powerButtonMouse.containsMouse ? Theme.red : Theme.bgAlt
+
+                            Behavior on color {
+                                ColorAnimation { duration: 150 }
+                            }
+
+                            IconImage {
+                                anchors.centerIn: parent
+                                implicitSize: 18
+                                source: Qt.resolvedUrl("assets/icons/power.svg")
+                                opacity: powerButtonMouse.containsMouse ? 0.95 : 0.85
+                            }
+
+                            MouseArea {
+                                id: powerButtonMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                            }
                         }
                     }
                 }

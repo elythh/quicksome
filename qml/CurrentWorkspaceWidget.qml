@@ -94,12 +94,10 @@ RowLayout {
             
             color: {
                 if (isActive) return Theme.accent
-                else if (mouseArea.containsMouse) return Theme.bgAlt
-                else return "transparent"
+                else return Theme.bgAlt
             }
 
-            border.width: isActive ? 0 : 1
-            border.color: Theme.fgAlt
+            border.width: 0
 
             Behavior on color {
                 ColorAnimation { duration: 150 }
