@@ -2,14 +2,54 @@
 import QtQuick
 import Quickshell
 import Quickshell.Hyprland
+import Quickshell.Services.Notifications
 import QtQuick.Layouts
 import Quickshell.Widgets
 
 ShellRoot {
     id: root
+    property var notificationHistory: []
+
+    function appendNotificationHistory(notification) {
+        if (!notification) return
+
+        const historyEntry = {
+            appName: notification.appName || "Notification",
+            summary: notification.summary || "",
+            body: notification.body || "",
+            urgency: notification.urgency,
+            timeText: Qt.formatTime(new Date(), "hh:mm")
+        }
+
+        const updatedHistory = [historyEntry]
+        const currentHistory = notificationHistory || []
+        const maxItems = 100
+
+        for (let i = 0; i < currentHistory.length && i < (maxItems - 1); ++i) {
+            updatedHistory.push(currentHistory[i])
+        }
+
+        notificationHistory = updatedHistory
+    }
+
+    NotificationServer {
+        id: notificationServer
+        actionsSupported: true
+        bodySupported: true
+        bodyMarkupSupported: false
+        bodyHyperlinksSupported: false
+        imageSupported: true
+
+        onNotification: function(notification) {
+            notification.tracked = true
+            root.appendNotificationHistory(notification)
+        }
+    }
 
     // Notification popup
-    NotificationPopup {}
+    NotificationPopup {
+        notificationServer: notificationServer
+    }
     VolumeOSD {}
 
     Variants {
@@ -18,9 +58,10 @@ ShellRoot {
             id: bar
             property var modelData
             property bool quickMenuOpen: false
+            property bool notificationHistoryOpen: false
             screen: modelData
             
-            height: 48
+            implicitHeight: 48
             anchors {
                 left: true
                 right: true
@@ -34,6 +75,14 @@ ShellRoot {
                 targetScreen: bar.screen
                 open: bar.quickMenuOpen
                 onRequestClose: bar.quickMenuOpen = false
+            }
+
+            NotificationHistoryPopup {
+                targetScreen: bar.screen
+                open: bar.notificationHistoryOpen
+                historyItems: root.notificationHistory
+                onRequestClose: bar.notificationHistoryOpen = false
+                onRequestClearAll: root.notificationHistory = []
             }
 
             Rectangle {
@@ -139,9 +188,20 @@ ShellRoot {
                             }
                         }
 
+                        SettingsButton {
+                            icon: "󰂚"
+                            tooltip: "Notification History"
+                            iconXOffset: 1
+                            iconYOffset: -1
+                            onClickAction: function() {
+                                bar.notificationHistoryOpen = !bar.notificationHistoryOpen
+                            }
+                        }
+
                         PowerButton {
                             icon: "󰐥"
                             tooltip: "Power Menu"
+                            iconXOffset: 1
                             iconYOffset: -1
                         }
                     }

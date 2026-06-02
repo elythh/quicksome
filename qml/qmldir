@@ -9,6 +9,7 @@ MediaWidget 1.0 MediaWidget.qml
 NetworkWidget 1.0 NetworkWidget.qml
 NetworkStatusWidget 1.0 NetworkStatusWidget.qml
 NotificationPopup 1.0 NotificationPopup.qml
+NotificationHistoryPopup 1.0 NotificationHistoryPopup.qml
 PowerButton 1.0 PowerButton.qml
 QuickMenuPopup 1.0 QuickMenuPopup.qml
 SettingsButton 1.0 SettingsButton.qml

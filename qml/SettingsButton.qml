@@ -6,6 +6,7 @@ Rectangle {
     
     property string icon: ""
     property string tooltip: ""
+    property int iconXOffset: 0
     property int iconYOffset: -1
     property var onClickAction: null
     
@@ -23,16 +24,14 @@ Rectangle {
         anchors.fill: parent
 
         Text {
-            anchors.centerIn: parent
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenterOffset: iconXOffset
             anchors.verticalCenterOffset: iconYOffset
-            width: Theme.iconSize
-            height: Theme.iconSize
             font.family: Theme.fontFamilyMono
             font.pixelSize: Theme.iconSize
             color: mouseArea.containsMouse ? Theme.bg : Theme.fg
             text: icon
-            verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignHCenter
         }
     }
 

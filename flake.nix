@@ -10,24 +10,23 @@
     (flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        quickshellDesktopEntry = pkgs.writeTextDir "share/applications/org.quickshell.desktop" ''
-          [Desktop Entry]
-          Type=Application
-          Name=Quickshell
-          Comment=Quickshell session helper
-          Exec=${pkgs.quickshell}/bin/quickshell
-          Icon=utilities-terminal
-          Terminal=false
-          StartupNotify=false
-          Categories=Utility;
-        '';
+        quickshellDesktopEntry = pkgs.makeDesktopItem {
+          name = "org.quickshell";
+          desktopName = "Quickshell";
+          comment = "Quickshell session helper";
+          exec = "${pkgs.quickshell}/bin/quickshell";
+          icon = "utilities-terminal";
+          terminal = false;
+          startupNotify = false;
+          categories = [ "Utility" ];
+        };
         
         # Script to run quickshell with this configuration
         runScript = pkgs.writeShellScriptBin "quickshell-bar-run" ''
           set -e
 
           # Help xdg-desktop-portal resolve org.quickshell app id
-          export XDG_DATA_HOME="${quickshellDesktopEntry}/share"
+          # Keep user's XDG_DATA_HOME intact; just prepend our desktop entry dir.
           export XDG_DATA_DIRS="${quickshellDesktopEntry}/share:''${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
           
           # Determine config directory
