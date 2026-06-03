@@ -24,8 +24,8 @@ Variants {
 
         color: "transparent"
 
-        WlrLayershell.layer: WlrLayer.Overlay
-        WlrLayershell.aboveWindows: true
+        WlrLayershell.layer: WlrLayer.Top
+        WlrLayershell.aboveWindows: false
         WlrLayershell.focusable: false
 
         ColumnLayout {

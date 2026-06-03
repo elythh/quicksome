@@ -2,15 +2,15 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.Mpris
-import Quickshell.Services.Pipewire
 
 Rectangle {
     id: mediaWidget
     Layout.alignment: Qt.AlignVCenter
     Layout.preferredWidth: 320
     Layout.preferredHeight: Theme.widgetHeight
-    radius: Theme.borderRadius
-    clip: true
+    radius: Theme.borderRadius * 2
+    antialiasing: true
+    color: "#ee0e0e0e"
 
     property var players: Mpris.players && Mpris.players.values ? Mpris.players.values : []
     property var player: {
@@ -24,30 +24,42 @@ Rectangle {
         }
         return fallback
     }
-    property var defaultAudio: Pipewire.defaultAudio
     property bool mediaActive: player !== null && player.playbackState !== MprisPlaybackState.Stopped
 
     visible: player !== null
 
-    color: Theme.bgAlt
-
-    Image {
-        anchors.fill: parent
-        source: player && player.trackArtUrl ? player.trackArtUrl : ""
-        fillMode: Image.PreserveAspectCrop
-        visible: mediaActive && source !== ""
-        smooth: true
-    }
-
     Rectangle {
+        id: card
         anchors.fill: parent
-        color: "#9c000000"
+        radius: mediaWidget.radius
+        clip: true
+        antialiasing: true
+        color: "#101010"
+
+        Image {
+            id: artwork
+            anchors.fill: parent
+            source: player && player.trackArtUrl ? player.trackArtUrl : ""
+            fillMode: Image.PreserveAspectCrop
+            smooth: true
+            asynchronous: true
+            visible: mediaActive && source !== ""
+        }
+
+        Rectangle {
+            anchors.fill: parent
+            color: "#8a000000"
+            visible: artwork.visible
+        }
     }
 
     RowLayout {
-        anchors.fill: parent
+        anchors.left: parent.left
+        anchors.right: parent.right
         anchors.leftMargin: 8
         anchors.rightMargin: 8
+        anchors.verticalCenter: parent.verticalCenter
+        height: implicitHeight
         spacing: 8
 
         ColumnLayout {
@@ -83,14 +95,14 @@ Rectangle {
             Rectangle {
                 Layout.preferredWidth: 22
                 Layout.preferredHeight: 22
-                radius: 11
-                color: "#66000000"
+                Layout.alignment: Qt.AlignVCenter
+                color: "transparent"
 
                 Text {
                     anchors.centerIn: parent
                     font.family: Theme.fontFamilyMono
                     font.pixelSize: 12
-                    color: "#f5f5f5"
+                    color: "#ffffff"
                     text: "󰒮"
                 }
 
@@ -104,14 +116,14 @@ Rectangle {
             Rectangle {
                 Layout.preferredWidth: 24
                 Layout.preferredHeight: 24
-                radius: 12
-                color: "#88ffffff"
+                Layout.alignment: Qt.AlignVCenter
+                color: "transparent"
 
                 Text {
                     anchors.centerIn: parent
                     font.family: Theme.fontFamilyMono
                     font.pixelSize: 12
-                    color: "#101010"
+                    color: "#ffffff"
                     text: player && player.playbackState === MprisPlaybackState.Playing ? "󰏤" : "󰐊"
                 }
 
@@ -140,14 +152,14 @@ Rectangle {
             Rectangle {
                 Layout.preferredWidth: 22
                 Layout.preferredHeight: 22
-                radius: 11
-                color: "#66000000"
+                Layout.alignment: Qt.AlignVCenter
+                color: "transparent"
 
                 Text {
                     anchors.centerIn: parent
                     font.family: Theme.fontFamilyMono
                     font.pixelSize: 12
-                    color: "#f5f5f5"
+                    color: "#ffffff"
                     text: "󰒭"
                 }
 
