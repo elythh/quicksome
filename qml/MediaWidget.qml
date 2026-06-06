@@ -1,16 +1,16 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Widgets
 import Quickshell.Services.Mpris
 
-Rectangle {
-    id: mediaWidget
+ClippingRectangle {
+    id: root
     Layout.alignment: Qt.AlignVCenter
     Layout.preferredWidth: 320
     Layout.preferredHeight: Theme.widgetHeight
-    radius: Theme.borderRadius * 2
-    antialiasing: true
-    color: "#ee0e0e0e"
+    radius: Theme.borderRadius
+    color: "#101010"
 
     property var players: Mpris.players && Mpris.players.values ? Mpris.players.values : []
     property var player: {
@@ -28,13 +28,12 @@ Rectangle {
 
     visible: player !== null
 
-    Rectangle {
-        id: card
+    ClippingRectangle {
+        id: artClip
         anchors.fill: parent
-        radius: mediaWidget.radius
-        clip: true
-        antialiasing: true
-        color: "#101010"
+        radius: Theme.borderRadius
+        color: "transparent"
+        visible: mediaActive
 
         Image {
             id: artwork
@@ -43,14 +42,20 @@ Rectangle {
             fillMode: Image.PreserveAspectCrop
             smooth: true
             asynchronous: true
-            visible: mediaActive && source !== ""
+            visible: source !== ""
         }
 
         Rectangle {
             anchors.fill: parent
-            color: "#8a000000"
+            color: "#80000000"
             visible: artwork.visible
         }
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        color: "#80000000"
+        visible: artClip.visible
     }
 
     RowLayout {
@@ -133,17 +138,11 @@ Rectangle {
                     onClicked: {
                         if (!player) return
                         if (player.playbackState === MprisPlaybackState.Playing) {
-                            if (player.pause) {
-                                player.pause()
-                            } else if (player.togglePlaying) {
-                                player.togglePlaying()
-                            }
+                            if (player.pause) player.pause()
+                            else if (player.togglePlaying) player.togglePlaying()
                         } else {
-                            if (player.play) {
-                                player.play()
-                            } else if (player.togglePlaying) {
-                                player.togglePlaying()
-                            }
+                            if (player.play) player.play()
+                            else if (player.togglePlaying) player.togglePlaying()
                         }
                     }
                 }
