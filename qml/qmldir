@@ -19,4 +19,5 @@ TaskBar 1.0 TaskBar.qml
 ToolTip 1.0 ToolTip.qml
 VolumeWidget 1.0 VolumeWidget.qml
 VolumeOSD 1.0 VolumeOSD.qml
+LockScreen 1.0 LockScreen.qml
 WorkspacesWidget 1.0 WorkspacesWidget.qml

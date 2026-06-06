@@ -132,6 +132,10 @@ ShellRoot {
 
     VolumeOSD {}
 
+    LockScreen {
+        id: lockScreen
+    }
+
     Variants {
         model: Quickshell.screens
         PanelWindow {
@@ -320,6 +324,7 @@ ShellRoot {
                                 anchors.fill: parent
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
+                                onClicked: lockScreen.lock()
                             }
                         }
                     }
