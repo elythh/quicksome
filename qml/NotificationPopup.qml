@@ -83,7 +83,12 @@ Variants {
                                 anchors.centerIn: parent
                                 width: 32
                                 height: 32
-                                source: modelData.appIcon || modelData.image || ""
+                                source: {
+                                    var s = modelData.appIcon || modelData.image || ""
+                                    if (s.length === 0) return ""
+                                    if (s[0] === '/' || s.indexOf('://') > 0) return s
+                                    return "image://icon/" + s
+                                }
                                 sourceSize.width: 32
                                 sourceSize.height: 32
                                 visible: source !== ""
@@ -137,13 +142,53 @@ Variants {
                                 visible: text !== ""
                             }
 
+                            // "Open" button — first/default action as prominent primary button
+                            Rectangle {
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: 32
+                                radius: Theme.borderRadius
+                                color: primaryActionMouse.containsMouse ? Qt.lighter(Theme.accent, 1.15) : Theme.accent
+                                visible: modelData.actions && modelData.actions.length > 0
+
+                                Behavior on color {
+                                    ColorAnimation { duration: 150 }
+                                }
+
+                                Text {
+                                    anchors.centerIn: parent
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: Theme.fontSize
+                                    font.weight: Font.DemiBold
+                                    color: Theme.bg
+                                    text: (modelData.actions && modelData.actions.length > 0) ? (modelData.actions[0].text || "Open") : "Open"
+                                }
+
+                                MouseArea {
+                                    id: primaryActionMouse
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        if (modelData.actions && modelData.actions.length > 0) {
+                                            modelData.actions[0].invoke()
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Secondary action buttons (actions past the first)
                             RowLayout {
                                 Layout.fillWidth: true
                                 spacing: 8
-                                visible: modelData.actions && modelData.actions.length > 0
+                                visible: modelData.actions && modelData.actions.length > 1
 
                                 Repeater {
-                                    model: modelData.actions || []
+                                    model: {
+                                        if (modelData.actions && modelData.actions.length > 1) {
+                                            return modelData.actions.slice(1)
+                                        }
+                                        return []
+                                    }
 
                                     Rectangle {
                                         required property var modelData
@@ -151,7 +196,7 @@ Variants {
                                         Layout.preferredHeight: 28
                                         Layout.fillWidth: true
                                         radius: Theme.borderRadius
-                                        color: actionMouseArea.containsMouse ? Theme.accent : Theme.bgAlt
+                                        color: secondaryActionMouse.containsMouse ? Theme.accent : Theme.bgAlt
 
                                         Behavior on color {
                                             ColorAnimation { duration: 150 }
@@ -162,12 +207,12 @@ Variants {
                                             font.family: Theme.fontFamily
                                             font.pixelSize: Theme.fontSize
                                             font.weight: Font.Medium
-                                            color: actionMouseArea.containsMouse ? Theme.bg : Theme.fg
+                                            color: secondaryActionMouse.containsMouse ? Theme.bg : Theme.fg
                                             text: modelData.text || "Action"
                                         }
 
                                         MouseArea {
-                                            id: actionMouseArea
+                                            id: secondaryActionMouse
                                             anchors.fill: parent
                                             hoverEnabled: true
                                             cursorShape: Qt.PointingHandCursor

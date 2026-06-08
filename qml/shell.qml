@@ -4,6 +4,7 @@ import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Services.Mpris
 import Quickshell.Services.Notifications
+import Quickshell.Io
 import QtQuick.Layouts
 import Quickshell.Widgets
 
@@ -28,6 +29,102 @@ ShellRoot {
     property string mediaToastTitle: ""
     property string mediaToastArtist: ""
 
+    property real cpuUsage: 0
+    property real memUsage: 0
+    property real diskUsage: 0
+    property var lastCpuStats: null
+
+    Process {
+        id: cpuProcess
+        running: false
+        command: ["sh", "-c", "head -n1 /proc/stat"]
+        
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const parts = text.trim().split(/\s+/)
+                if (parts.length < 5) return
+                
+                const idle = parseInt(parts[4])
+                const total = parts.slice(1).reduce((sum, val) => sum + parseInt(val), 0)
+                
+                if (root.lastCpuStats) {
+                    const idleDelta = idle - root.lastCpuStats.idle
+                    const totalDelta = total - root.lastCpuStats.total
+                    if (totalDelta > 0) {
+                        root.cpuUsage = Math.max(0, Math.min(100, (1 - idleDelta / totalDelta) * 100))
+                    }
+                }
+                root.lastCpuStats = { idle: idle, total: total }
+            }
+        }
+    }
+
+    Process {
+        id: memProcess
+        running: false
+        command: ["sh", "-c", "head -n3 /proc/meminfo"]
+        
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const lines = text.trim().split('\n')
+                let memTotal = 0, memAvail = 0
+                
+                lines.forEach(line => {
+                    const match = line.match(/^(\w+):\s+(\d+)/)
+                    if (!match) return
+                    const val = parseInt(match[2])
+                    if (match[1] === 'MemTotal') memTotal = val
+                    else if (match[1] === 'MemAvailable') memAvail = val
+                })
+                
+                if (memTotal > 0) {
+                    root.memUsage = Math.max(0, Math.min(100, ((memTotal - memAvail) / memTotal) * 100))
+                }
+            }
+        }
+    }
+
+    Process {
+        id: diskProcess
+        running: false
+        command: ["df", "-h", "/"]
+        
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const lines = text.trim().split('\n')
+                if (lines.length < 2) return
+                
+                const match = lines[1].match(/(\d+)%/)
+                if (match) {
+                    root.diskUsage = parseInt(match[1])
+                }
+            }
+        }
+    }
+
+    function updateSystemStats() {
+        cpuProcess.running = false
+        cpuProcess.running = true
+        
+        memProcess.running = false
+        memProcess.running = true
+        
+        diskProcess.running = false
+        diskProcess.running = true
+    }
+
+    Timer {
+        id: systemStatsTimer
+        interval: 15000
+        running: true
+        repeat: true
+        onTriggered: root.updateSystemStats()
+    }
+
+    Component.onCompleted: {
+        root.updateSystemStats()
+    }
+
     function pushHistoryEntry(entry) {
         const updatedHistory = [entry]
         const currentHistory = notificationHistory || []
@@ -45,10 +142,13 @@ ShellRoot {
 
         pushHistoryEntry({
             appName: notification.appName || "Notification",
+            appIcon: notification.appIcon || "",
+            image: notification.image || "",
             summary: notification.summary || "",
             body: notification.body || "",
             urgency: notification.urgency,
-            timeText: Qt.formatTime(new Date(), "hh:mm")
+            timeText: Qt.formatTime(new Date(), "hh:mm"),
+            hasActions: notification.actions && notification.actions.length > 0
         })
     }
 
@@ -165,6 +265,9 @@ ShellRoot {
                 targetScreen: bar.screen
                 open: bar.notificationHistoryOpen
                 historyItems: root.notificationHistory
+                cpuUsage: root.cpuUsage
+                memUsage: root.memUsage
+                diskUsage: root.diskUsage
                 onRequestClose: bar.notificationHistoryOpen = false
                 onRequestClearAll: root.notificationHistory = []
             }
