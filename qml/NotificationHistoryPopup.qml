@@ -20,10 +20,15 @@ PanelWindow {
     screen: targetScreen
     visible: open
 
-    implicitWidth: 420
-    implicitHeight: historyCard.height + Theme.barHeight + 20
+    implicitWidth: 410
+    implicitHeight: 702
 
     color: "transparent"
+
+    margins {
+        right: 10
+        bottom: 13
+    }
 
     anchors {
         right: true
@@ -34,10 +39,7 @@ PanelWindow {
         id: historyCard
         width: 400
         height: 700
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        anchors.rightMargin: 10
-        anchors.bottomMargin: Theme.barHeight + 10
+        anchors.centerIn: parent
         radius: 8
         color: Theme.bg
 
