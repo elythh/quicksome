@@ -6,6 +6,7 @@ ClockWidget 1.0 ClockWidget.qml
 CurrentWorkspaceWidget 1.0 CurrentWorkspaceWidget.qml
 LauncherButton 1.0 LauncherButton.qml
 MediaWidget 1.0 MediaWidget.qml
+MediaPopup 1.0 MediaPopup.qml
 MprisToastPopup 1.0 MprisToastPopup.qml
 NetworkWidget 1.0 NetworkWidget.qml
 NetworkStatusWidget 1.0 NetworkStatusWidget.qml

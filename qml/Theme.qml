@@ -42,7 +42,7 @@ QtObject {
     readonly property int barHeight: 48
     readonly property int widgetHeight: 32
     readonly property int widgetSpacing: 8
-    readonly property int borderRadius: 8
+    readonly property int borderRadius: 4
     readonly property int iconSize: 20
     readonly property int fontSize: 12
     readonly property int fontSizeSmall: 10

@@ -243,6 +243,7 @@ ShellRoot {
             property var modelData
             property bool quickMenuOpen: false
             property bool notificationHistoryOpen: false
+            property bool mediaPopupOpen: false
             screen: modelData
             
             implicitHeight: 48
@@ -270,6 +271,13 @@ ShellRoot {
                 diskUsage: root.diskUsage
                 onRequestClose: bar.notificationHistoryOpen = false
                 onRequestClearAll: root.notificationHistory = []
+            }
+
+            MediaPopup {
+                targetScreen: bar.screen
+                open: bar.mediaPopupOpen
+                player: root.activePlayer
+                onRequestClose: bar.mediaPopupOpen = false
             }
 
             Rectangle {
@@ -362,6 +370,7 @@ ShellRoot {
 
                         MediaWidget {
                             visible: mediaActive
+                            onClicked: bar.mediaPopupOpen = !bar.mediaPopupOpen
                         }
 
 

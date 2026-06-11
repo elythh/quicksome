@@ -93,8 +93,8 @@ RowLayout {
             property string resolvedIconSource: currentWorkspaceWindows.iconSourceFor(modelData)
             
             color: {
-                if (isActive) return Theme.accent
-                else return Theme.bgAlt
+                if (isActive) return Theme.bgAlt
+                else return "transparent"
             }
 
             border.width: 0
@@ -106,17 +106,17 @@ RowLayout {
             IconImage {
                 id: appIcon
                 anchors.centerIn: parent
-                implicitSize: 20
+                implicitSize: 24
                 source: resolvedIconSource
                 visible: resolvedIconSource !== ""
             }
 
             Text {
                 anchors.centerIn: parent
-                width: 20
-                height: 20
+                width: 24
+                height: 24
                 font.family: Theme.fontFamilyMono
-                font.pixelSize: 16
+                font.pixelSize: 20
                 font.weight: Font.Bold
                 color: isActive ? Theme.bg : Theme.fg
                 text: {

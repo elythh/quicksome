@@ -12,6 +12,8 @@ ClippingRectangle {
     radius: Theme.borderRadius
     color: "#101010"
 
+    signal clicked()
+
     property var players: Mpris.players && Mpris.players.values ? Mpris.players.values : []
     property var player: {
         let fallback = null
@@ -90,6 +92,12 @@ ClippingRectangle {
                 text: player ? (player.trackArtist || "Unknown Artist") : ""
                 elide: Text.ElideRight
                 visible: mediaActive
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                onClicked: root.clicked()
             }
         }
 

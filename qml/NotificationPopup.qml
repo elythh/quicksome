@@ -42,20 +42,107 @@ Variants {
                     property bool hovering: cardHover.hovered || closeMouseArea.containsMouse
 
                     Layout.fillWidth: true
-                    Layout.preferredHeight: notifContent.implicitHeight + 24
+                    Layout.preferredHeight: headerBar.height + notifContent.implicitHeight + 24
 
-                    radius: Theme.borderRadius
+                    radius: 8
                     color: Theme.bg
-                    border.color: modelData.urgency === NotificationUrgency.Critical ? Theme.red : Theme.accent
-                    border.width: 2
 
                     Rectangle {
                         anchors.fill: parent
                         anchors.margins: -4
-                        radius: Theme.borderRadius + 2
+                        radius: 10
                         color: Theme.shadow
                         z: -1
                         opacity: 0.4
+                    }
+
+                    // macOS-style header bar
+                    Rectangle {
+                        id: headerBar
+                        anchors.top: parent.top
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        height: 32
+                        radius: 8
+                        color: modelData.urgency === NotificationUrgency.Critical ? "#1a1414" : "#14181f"
+
+                        Rectangle {
+                            anchors.bottom: parent.bottom
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            height: parent.radius
+                            color: parent.color
+                        }
+
+                        RowLayout {
+                            anchors.fill: parent
+                            anchors.leftMargin: 12
+                            anchors.rightMargin: 12
+                            spacing: 6
+
+                            // macOS window control dots
+                            RowLayout {
+                                spacing: 6
+                                Layout.alignment: Qt.AlignVCenter
+
+                                Rectangle {
+                                    width: 10
+                                    height: 10
+                                    radius: 5
+                                    color: modelData.urgency === NotificationUrgency.Critical ? Theme.red : "#ff5f56"
+                                    border.color: modelData.urgency === NotificationUrgency.Critical ? Qt.lighter(Theme.red, 1.2) : "#e0443e"
+                                    border.width: 0.5
+                                }
+
+                                Rectangle {
+                                    width: 10
+                                    height: 10
+                                    radius: 5
+                                    color: "#ffbd2e"
+                                    border.color: "#dea123"
+                                    border.width: 0.5
+                                }
+
+                                Rectangle {
+                                    width: 10
+                                    height: 10
+                                    radius: 5
+                                    color: modelData.urgency === NotificationUrgency.Critical ? Theme.fgAlt : "#27c93f"
+                                    border.color: modelData.urgency === NotificationUrgency.Critical ? Theme.fg : "#1aab29"
+                                    border.width: 0.5
+                                }
+                            }
+
+                            Item { Layout.fillWidth: true }
+
+                            // Close button
+                            Rectangle {
+                                Layout.preferredWidth: 20
+                                Layout.preferredHeight: 20
+                                radius: 10
+                                color: closeMouseArea.containsMouse ? Theme.red : "transparent"
+
+                                Behavior on color {
+                                    ColorAnimation { duration: 150 }
+                                }
+
+                                Text {
+                                    anchors.centerIn: parent
+                                    font.family: Theme.fontFamilyMono
+                                    font.pixelSize: 14
+                                    color: closeMouseArea.containsMouse ? Theme.bg : Theme.fgAlt
+                                    text: "󰅖"
+                                }
+
+                                MouseArea {
+                                    id: closeMouseArea
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: modelData.dismiss()
+                                }
+                            }
+                        }
                     }
 
                     Timer {
@@ -68,7 +155,9 @@ Variants {
 
                     RowLayout {
                         id: notifContent
-                        anchors.fill: parent
+                        anchors.top: headerBar.bottom
+                        anchors.left: parent.left
+                        anchors.right: parent.right
                         anchors.margins: 12
                         spacing: 12
 
@@ -220,34 +309,6 @@ Variants {
                                         }
                                     }
                                 }
-                            }
-                        }
-
-                        Rectangle {
-                            Layout.preferredWidth: 24
-                            Layout.preferredHeight: 24
-                            Layout.alignment: Qt.AlignTop
-                            radius: 12
-                            color: closeMouseArea.containsMouse ? Theme.red : "transparent"
-
-                            Behavior on color {
-                                ColorAnimation { duration: 150 }
-                            }
-
-                            Text {
-                                anchors.centerIn: parent
-                                font.family: Theme.fontFamilyMono
-                                font.pixelSize: 16
-                                color: closeMouseArea.containsMouse ? Theme.bg : Theme.fgAlt
-                                text: "󰅖"
-                            }
-
-                            MouseArea {
-                                id: closeMouseArea
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: modelData.dismiss()
                             }
                         }
                     }

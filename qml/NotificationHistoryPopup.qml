@@ -47,30 +47,78 @@ PanelWindow {
             anchors.fill: parent
             spacing: 0
 
+            // macOS-style header bar
             Rectangle {
+                id: headerBar
                 Layout.fillWidth: true
-                Layout.preferredHeight: 60
-                color: Theme.bgAlt
+                Layout.preferredHeight: 48
+                color: "#14181f"
+                radius: 8
+
+                Rectangle {
+                    anchors.bottom: parent.bottom
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    height: parent.radius
+                    color: parent.color
+                }
 
                 RowLayout {
                     anchors.fill: parent
-                    anchors.leftMargin: 20
-                    anchors.rightMargin: 20
-                    spacing: 0
+                    anchors.leftMargin: 16
+                    anchors.rightMargin: 16
+                    spacing: 12
 
+                    // macOS window control dots
+                    RowLayout {
+                        spacing: 6
+                        Layout.alignment: Qt.AlignVCenter
+
+                        Rectangle {
+                            width: 12
+                            height: 12
+                            radius: 6
+                            color: "#ff5f56"
+                            border.color: "#e0443e"
+                            border.width: 0.5
+                        }
+
+                        Rectangle {
+                            width: 12
+                            height: 12
+                            radius: 6
+                            color: "#ffbd2e"
+                            border.color: "#dea123"
+                            border.width: 0.5
+                        }
+
+                        Rectangle {
+                            width: 12
+                            height: 12
+                            radius: 6
+                            color: "#27c93f"
+                            border.color: "#1aab29"
+                            border.width: 0.5
+                        }
+                    }
+
+                    Item { Layout.fillWidth: true }
+
+                    // Title
                     Text {
-                        Layout.fillWidth: true
                         text: "Notifications"
                         color: Theme.fg
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fontSize + 2
                         font.weight: Font.DemiBold
-                        horizontalAlignment: Text.AlignLeft
                     }
 
+                    Item { Layout.fillWidth: true }
+
+                    // Clear all button
                     Text {
                         font.family: Theme.fontFamilyMono
-                        font.pixelSize: 26
+                        font.pixelSize: 22
                         color: clearHover.containsMouse ? Theme.red : Theme.fgAlt
                         text: "󰎟"
                         visible: historyItems.length > 0
@@ -82,6 +130,7 @@ PanelWindow {
                         MouseArea {
                             id: clearHover
                             anchors.fill: parent
+                            anchors.margins: -4
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
                             onClicked: historyPopup.requestClearAll()
