@@ -22,7 +22,7 @@ Variants {
         visible: shown
 
         implicitWidth: 360
-        implicitHeight: 110
+        implicitHeight: 142
         color: "transparent"
 
         anchors {
@@ -69,15 +69,78 @@ Variants {
         }
 
         Rectangle {
+            id: mainCard
             anchors.fill: parent
             anchors.margins: 10
-            radius: Theme.borderRadius
+            radius: 8
             color: Theme.bg
-            border.width: 2
-            border.color: Theme.accent
+
+            // macOS-style header bar
+            Rectangle {
+                id: headerBar
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                height: 32
+                radius: 8
+                color: Theme.bgAlt
+
+                Rectangle {
+                    anchors.bottom: parent.bottom
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    height: parent.radius
+                    color: parent.color
+                }
+
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.leftMargin: 12
+                    anchors.rightMargin: 12
+                    spacing: 6
+
+                    Item { Layout.fillWidth: true }
+
+                    // Close button (red dot)
+                    Rectangle {
+                        Layout.preferredWidth: 12
+                        Layout.preferredHeight: 12
+                        Layout.alignment: Qt.AlignVCenter
+                        radius: 6
+                        color: closeMouseArea.containsMouse ? Qt.lighter(Theme.red, 1.2) : Theme.red
+                        border.color: closeMouseArea.containsMouse ? Qt.lighter(Theme.red, 1.3) : Qt.darker(Theme.red, 1.1)
+                        border.width: 0.5
+
+                        Behavior on color {
+                            ColorAnimation { duration: 150 }
+                        }
+
+                        Text {
+                            anchors.centerIn: parent
+                            font.family: Theme.fontFamilyMono
+                            font.pixelSize: 8
+                            color: closeMouseArea.containsMouse ? Theme.bg : "transparent"
+                            text: "✕"
+                            font.weight: Font.Bold
+                        }
+
+                        MouseArea {
+                            id: closeMouseArea
+                            anchors.fill: parent
+                            anchors.margins: -4
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: toastWindow.shown = false
+                        }
+                    }
+                }
+            }
 
             RowLayout {
-                anchors.fill: parent
+                anchors.top: headerBar.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
                 anchors.margins: 10
                 spacing: 10
 

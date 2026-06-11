@@ -64,7 +64,7 @@ Variants {
                         anchors.right: parent.right
                         height: 32
                         radius: 8
-                        color: modelData.urgency === NotificationUrgency.Critical ? "#1a1414" : "#14181f"
+                        color: Theme.bgAlt
 
                         Rectangle {
                             anchors.bottom: parent.bottom
@@ -80,47 +80,17 @@ Variants {
                             anchors.rightMargin: 12
                             spacing: 6
 
-                            // macOS window control dots
-                            RowLayout {
-                                spacing: 6
-                                Layout.alignment: Qt.AlignVCenter
-
-                                Rectangle {
-                                    width: 10
-                                    height: 10
-                                    radius: 5
-                                    color: modelData.urgency === NotificationUrgency.Critical ? Theme.red : "#ff5f56"
-                                    border.color: modelData.urgency === NotificationUrgency.Critical ? Qt.lighter(Theme.red, 1.2) : "#e0443e"
-                                    border.width: 0.5
-                                }
-
-                                Rectangle {
-                                    width: 10
-                                    height: 10
-                                    radius: 5
-                                    color: "#ffbd2e"
-                                    border.color: "#dea123"
-                                    border.width: 0.5
-                                }
-
-                                Rectangle {
-                                    width: 10
-                                    height: 10
-                                    radius: 5
-                                    color: modelData.urgency === NotificationUrgency.Critical ? Theme.fgAlt : "#27c93f"
-                                    border.color: modelData.urgency === NotificationUrgency.Critical ? Theme.fg : "#1aab29"
-                                    border.width: 0.5
-                                }
-                            }
-
                             Item { Layout.fillWidth: true }
 
-                            // Close button
+                            // Close button (red dot)
                             Rectangle {
-                                Layout.preferredWidth: 20
-                                Layout.preferredHeight: 20
-                                radius: 10
-                                color: closeMouseArea.containsMouse ? Theme.red : "transparent"
+                                Layout.preferredWidth: 12
+                                Layout.preferredHeight: 12
+                                Layout.alignment: Qt.AlignVCenter
+                                radius: 6
+                                color: closeMouseArea.containsMouse ? Qt.lighter(Theme.red, 1.2) : Theme.red
+                                border.color: closeMouseArea.containsMouse ? Qt.lighter(Theme.red, 1.3) : Qt.darker(Theme.red, 1.1)
+                                border.width: 0.5
 
                                 Behavior on color {
                                     ColorAnimation { duration: 150 }
@@ -129,14 +99,16 @@ Variants {
                                 Text {
                                     anchors.centerIn: parent
                                     font.family: Theme.fontFamilyMono
-                                    font.pixelSize: 14
-                                    color: closeMouseArea.containsMouse ? Theme.bg : Theme.fgAlt
-                                    text: "󰅖"
+                                    font.pixelSize: 8
+                                    color: closeMouseArea.containsMouse ? Theme.bg : "transparent"
+                                    text: "✕"
+                                    font.weight: Font.Bold
                                 }
 
                                 MouseArea {
                                     id: closeMouseArea
                                     anchors.fill: parent
+                                    anchors.margins: -4
                                     hoverEnabled: true
                                     cursorShape: Qt.PointingHandCursor
                                     onClicked: modelData.dismiss()

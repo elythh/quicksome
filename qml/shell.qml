@@ -2,7 +2,6 @@
 import QtQuick
 import Quickshell
 import Quickshell.Hyprland
-import Quickshell.Services.Mpris
 import Quickshell.Services.Notifications
 import Quickshell.Io
 import QtQuick.Layouts
@@ -11,23 +10,6 @@ import Quickshell.Widgets
 ShellRoot {
     id: root
     property var notificationHistory: []
-    property var players: Mpris.players && Mpris.players.values ? Mpris.players.values : []
-    property var activePlayer: {
-        let fallback = null
-        for (let i = 0; i < players.length; i++) {
-            const p = players[i]
-            if (!p) continue
-            if (p.playbackState === MprisPlaybackState.Playing) return p
-            if (!fallback && p.playbackState !== MprisPlaybackState.Stopped) fallback = p
-            if (!fallback) fallback = p
-        }
-        return fallback
-    }
-    property string lastTrackKey: ""
-    property int mediaToastSequence: 0
-    property string mediaToastApp: ""
-    property string mediaToastTitle: ""
-    property string mediaToastArtist: ""
 
     property real cpuUsage: 0
     property real memUsage: 0
@@ -152,58 +134,6 @@ ShellRoot {
         })
     }
 
-    function handleMprisChange() {
-        const p = activePlayer
-        if (!p) return
-
-        const title = p.trackTitle || ""
-        const artist = p.trackArtist || ""
-        if (title === "" && artist === "") return
-
-        const key = (p.uniqueId || p.identity || "player") + "|" + title + "|" + artist
-        if (key === lastTrackKey) return
-        lastTrackKey = key
-
-        pushHistoryEntry({
-            appName: p.identity || "Media",
-            summary: title || "Now playing",
-            body: artist,
-            urgency: NotificationUrgency.Low,
-            timeText: Qt.formatTime(new Date(), "hh:mm")
-        })
-
-        mediaToastApp = p.identity || "Media"
-        mediaToastTitle = title || "Now playing"
-        mediaToastArtist = artist
-        mediaToastSequence = mediaToastSequence + 1
-    }
-
-    onActivePlayerChanged: handleMprisChange()
-
-    Connections {
-        target: activePlayer ? activePlayer : null
-
-        function onTrackChanged() {
-            root.handleMprisChange()
-        }
-
-        function onMetadataChanged() {
-            root.handleMprisChange()
-        }
-
-        function onTrackTitleChanged() {
-            root.handleMprisChange()
-        }
-
-        function onTrackArtistChanged() {
-            root.handleMprisChange()
-        }
-
-        function onPlaybackStateChanged() {
-            root.handleMprisChange()
-        }
-    }
-
     NotificationServer {
         id: notificationServer
         actionsSupported: true
@@ -221,13 +151,6 @@ ShellRoot {
     // Notification popup
     NotificationPopup {
         notificationServer: notificationServer
-    }
-
-    MprisToastPopup {
-        toastSequence: root.mediaToastSequence
-        appName: root.mediaToastApp
-        title: root.mediaToastTitle
-        artist: root.mediaToastArtist
     }
 
     VolumeOSD {}

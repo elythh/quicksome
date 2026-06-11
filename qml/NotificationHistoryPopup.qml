@@ -52,7 +52,7 @@ PanelWindow {
                 id: headerBar
                 Layout.fillWidth: true
                 Layout.preferredHeight: 48
-                color: "#14181f"
+                color: Theme.bgAlt
                 radius: 8
 
                 Rectangle {
@@ -69,51 +69,16 @@ PanelWindow {
                     anchors.rightMargin: 16
                     spacing: 12
 
-                    // macOS window control dots
-                    RowLayout {
-                        spacing: 6
-                        Layout.alignment: Qt.AlignVCenter
-
-                        Rectangle {
-                            width: 12
-                            height: 12
-                            radius: 6
-                            color: "#ff5f56"
-                            border.color: "#e0443e"
-                            border.width: 0.5
-                        }
-
-                        Rectangle {
-                            width: 12
-                            height: 12
-                            radius: 6
-                            color: "#ffbd2e"
-                            border.color: "#dea123"
-                            border.width: 0.5
-                        }
-
-                        Rectangle {
-                            width: 12
-                            height: 12
-                            radius: 6
-                            color: "#27c93f"
-                            border.color: "#1aab29"
-                            border.width: 0.5
-                        }
-                    }
-
-                    Item { Layout.fillWidth: true }
-
                     // Title
                     Text {
+                        Layout.fillWidth: true
                         text: "Notifications"
                         color: Theme.fg
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fontSize + 2
                         font.weight: Font.DemiBold
+                        horizontalAlignment: Text.AlignLeft
                     }
-
-                    Item { Layout.fillWidth: true }
 
                     // Clear all button
                     Text {
